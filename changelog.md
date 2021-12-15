@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Add
 - [templates]
   Add Trusted Launch support for Gen2 managed Windows images.
+
+## [3.0.0.0] - 15/12/2021
+
+### Changed
+- [all files]
+  Version number changed to 3.0.0.0 to resolve azure issue
   
 ## [2.0.1.0] - 10-12-2021
  
