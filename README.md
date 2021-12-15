@@ -1,0 +1,1 @@
+azuretemplatesv3
