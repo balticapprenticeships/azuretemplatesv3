@@ -1,0 +1,54 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "3.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string"
+        },
+        "platformFaultDomainCount": {
+            "type": "int"
+        },
+        "platformUpdateDomainCount": {
+            "type": "int"
+        },
+        "skuName": {
+            "type": "string"
+        },
+        "createdBy": {
+            "type": "string"
+        },
+        "courseDate": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "availabilitySetName": "[concat(resourceGroup().name, '-as')]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Compute/availabilitySets",
+            "apiVersion": "2020-12-01",
+            "name": "[variables('availabilitySetName')]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "Displayname": "Availability Set",
+                "Dept": "[resourceGroup().tags['Dept']]",
+                "Created By": "[parameters('createdBy')]",
+                "Course Date": "[parameters('courseDate')]"
+            },
+            "properties": {
+                "platformFaultDomainCount": "[parameters('platformFaultDomainCount')]",
+                "platformUpdateDomainCount": "[parameters('platformUpdateDomainCount')]"
+            },
+            "sku": {
+                "name": "[parameters('skuName')]"
+            }
+        }
+    ],
+    "outputs": {
+        "availabilitySetName": {
+            "type": "object",
+            "value": "[reference(resourceId('Microsoft.Compute/availabilitySets', variables('availabilitySetName')))]"
+        }
+    }
+}

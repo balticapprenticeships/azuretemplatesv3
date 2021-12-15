@@ -1,0 +1,194 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "3.0.0.0",
+    "parameters": {
+        "vmName": {
+            "type": "string"
+        },
+        "vmCount": {
+            "type": "int"
+        },
+        "trainerInitials": {
+            "type": "string"
+        },
+        "location": {
+            "type": "string"
+        },
+        "createdBy": {
+            "type": "string"
+        },
+        "idleVm": {
+            "type": "string"
+        },
+        "resourceGroupCleanup": {
+            "type": "string"
+        },
+        "schedule": {
+            "type": "string"
+        },
+        "vmSize": {
+            "type": "string"
+        },
+        "osDiskType": {
+            "type": "string"
+        },
+        "imageBaseOS": {
+            "type": "string"
+        },
+        "licenseType": {
+            "type": "string"
+        },
+        "imageVersion": {
+            "type": "string"
+        },
+        "enableHotpatching": {
+            "type": "bool"
+        },
+        "patchMode": {
+            "type": "string"
+        },
+        "securityType": {
+            "type": "string"
+        },
+        "secureBoot": {
+            "type": "bool"
+        },
+        "vTPM": {
+            "type": "bool"
+        },
+        "adminUsername": {
+            "type": "string"
+        },
+        "adminPassword": {
+            "type": "securestring"
+        }
+    },
+    "variables": {
+        "vmNamePrefix": "[toUpper(concat(parameters('vmName'), parameters('trainerInitials')))]",
+        "galleryImageName": "SharedImageGallery",
+        "windowsLicense": "[if(equals(parameters('imageBaseOS'), 'WindowsServer'), 'Windows_Server', 'Windows_Client')]",
+        "operatingSystemValues": {
+            "WindowsServer": {
+                "galleryImageDefinitionName": "BA-WinServer2016"
+            },
+            "WindowsClient": {
+                "galleryImageDefinitionName": "BA-Win10"
+            }
+        },
+        "trustedLaunch": {
+            "securityType": "[parameters('securityType')]",
+            "uefiSettings": {
+                "secureBootEnabled": "[parameters('secureBoot')]",
+                "vTpmEnabled": "[parameters('vTPM')]"
+            }
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2020-06-01",
+            "name": "[concat(variables('vmNamePrefix'), copyIndex('virtualMachineLoop', 1))]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "Displayname": "Virtual Machine",
+                "Dept": "[resourceGroup().tags['Dept']]",
+                "Created By": "[parameters('createdBy')]",
+                "Schedule": "[if(equals(parameters('schedule'), 'Yes'), 'StartDaily', 'NoSchedule')]",
+                "IdleShutdown": "[parameters('idleVm')]",
+                "Cleanup": "[parameters('resourceGroupCleanup')]"
+            },
+            "copy": {
+                "name": "virtualMachineLoop",
+                "count": "[parameters('vmCount')]"
+            },
+            "dependsOn": [
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('vmSize')]"
+                },
+                "storageProfile": {
+                    "osDisk": {
+                        "name": "[concat(variables('vmNamePrefix'), copyIndex('virtualMachineLoop', 1), '-osdisk')]",
+                        "createOption": "FromImage",
+                        "managedDisk": {
+                            "storageAccountType": "[parameters('osDiskType')]"
+                        }
+                    },
+                    "imageReference": {
+                        "id": "[resourceId('Microsoft.Compute/galleries/images/versions', variables('galleryImageName'), variables('operatingSystemValues')[parameters('imageBaseOS')].galleryImageDefinitionName, parameters('imageVersion'))]"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('vmNamePrefix'), copyIndex('virtualMachineLoop', 1), '-nic'))]"
+                        }
+                    ]
+                },
+                "osProfile": {
+                    "computerName": "[concat(variables('vmNamePrefix'), copyIndex('virtualMachineLoop', 1))]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]",
+                    "windowsConfiguration": {
+                        "enableAutomaticUpdates": true,
+                        "provisionVMAgent": true,
+                        "timeZone": "GMT Standard Time",
+                        "patchSettings": {
+                            "enableHotpatching": "[parameters('enableHotpatching')]",
+                            "patchMode": "[parameters('patchMode')]"
+                        }
+                    }
+                },
+                "securityProfile": "[if(equals(parameters('securityType'), 'TrustedLaunch'), variables('trustedLaunch'), json('null'))]",                
+                "licenseType": "[if(equals(parameters('licenseType'), 'AzureHybrid'), variables('windowsLicense'), json('null'))]",
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": false
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.DevTestLab/schedules",
+            "apiVersion": "2018-09-15",
+            "name": "[concat('shutdown-computevm-', concat(variables('vmNamePrefix'), copyIndex('shutdownLoop', 1)))]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "Displayname": "Shutdown Schedule",
+                "Dept": "[resourceGroup().tags['Dept']]",
+                "Created By": "[parameters('createdBy')]",
+                "Cleanup": "[parameters('resourceGroupCleanup')]"
+            },
+            "copy": {
+                "name": "shutdownLoop",
+                "count": "[parameters('vmCount')]"
+            },
+            "properties": {
+                "status": "Enabled",
+                "taskType": "ComputeVmShutdownTask",
+                "dailyRecurrence": {
+                    "time": "17:00"
+                },
+                "timeZoneId": "GMT Standard Time",
+                "targetResourceId": "[resourceId('Microsoft.Compute/virtualMachines', concat(variables('vmNamePrefix'), copyIndex('shutdownLoop', 1)))]",
+                "notificationSettings": {
+                    "status": "Disabled",
+                    "notificationLocale": "en",
+                    "timeInMinutes": 30
+                }
+            }
+        }
+    ],
+    "outputs": {
+        "vmId": {
+            "type": "array",
+            "copy": {
+                "count": "[parameters('vmCount')]",
+                "input": {
+                    "value": "[resourceId('Microsoft.Compute/virtualMachines', concat(variables('vmNamePrefix'), copyIndex(1)))]"
+                }
+            }            
+        }
+    }
+}

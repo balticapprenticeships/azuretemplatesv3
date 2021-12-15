@@ -1,0 +1,811 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "3.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string",
+            "defaultValue": "ukwest",
+            "allowedValues": [
+                "ukwest",
+                "uksouth"
+            ],
+            "metadata": {
+                "description": "Location to store the resource group and all vm's."
+            }
+        },
+        "vmName": {
+            "type": "string",
+            "metadata": {
+                "description": "Virtual Machine name e.g. 306Client."
+            }
+        },
+        "vmCount": {
+            "type": "int",
+            "minValue": 1,
+            "maxValue": 20,
+            "metadata": {
+                "decription": "Number of Virtual Machines required between 1 and 20 e.g. 5"
+            }
+        },
+        "createdBy": {
+            "type": "string",
+            "metadata": {
+                "description": "Please enter your name 'Firstname Surname'"
+            }
+        },
+        "trainerInitials": {
+            "type": "string",
+            "metadata": {
+                "description": "Trainer initials used to create a unique resources."
+            }
+        },
+        "courseDate": {
+            "type": "string",
+            "metadata": {
+                "description": ""
+            }
+        },
+        "schedule": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "metadata": {
+                "description": "Should these VMs start automaticly at the begining of each day 'Yes' or 'No'"
+            }
+        },
+        "idleVm": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "metadata": {
+                "description": "Here you can set whether you wish to have the idle virtual machines auto stop after 15mins of inactivity."
+            }
+        },
+        "resourceGroupCleanup": {
+            "type": "string",
+            "allowedValues": [
+                "Disabled",
+                "Enabled"
+            ],
+            "metadata": {
+                "description": "Choose whether or not to have the VM and associated resourced automatically deleted at the end of the week"
+            }
+        },
+        "osDisktype": {
+            "type": "string",
+            "defaultValue": "Standard_LRS",
+            "allowedValues": [
+                "Standard_LRS"
+            ],
+            "metadata": {
+                "description": "Type of storage Standard HDD, SSD or Premium."
+            }
+        },
+        "vmSize": {
+            "type": "string",
+            "allowedValues": [
+                "Standard_B1ms",
+                "Standard_B2s",
+                "Standard_D2s_v3"
+            ],
+            "metadata": {
+                "description": "Virtual Machine size."
+            }
+        },
+        "osPlatform": {
+            "type": "string",
+            "allowedValues": [
+                "Windows",
+                "Linux"
+            ],
+            "metadata": {
+                "description": "Select the custom OS type to deploy"
+            }
+        },
+        "imageCreation": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "metadata": {
+                "description": ""
+            }
+        },
+        "imageBaseOS": {
+            "type": "string",
+            "defaultValue": "WindowsServer",                                       
+            "allowedValues": [
+                "WindowsClient",
+                "WindowsServer"
+            ],
+            "metadata": {
+                "descritpion": ""
+            }
+        },
+        "operatingSystem": {
+            "type": "string",
+            "defaultValue": "NoValue",
+            "allowedValues": [
+                "NoValue",
+                "WindowsClient",
+                "WindowsServer-MD",
+                "WindowsServer-SF",
+                "WindowsServer-NA",
+                "WindowsServer-SP",
+                "WindowsServer-CITE",
+                "WindowsTesting",
+                "DiplomaVm",
+                "RawDigital",
+                "DataBootCamp"
+            ],
+            "metadata": {
+                "description": "Choose your operating system."
+            }
+        },
+        "linuxOS": {
+            "type": "string",
+            "defaultValue": "UbuntuServer",
+            "allowedValues": [
+                "UbuntuServer",
+                "UbuntuServer2004",
+                "Debian",
+                "RedHat"
+            ],
+            "metadata": {
+                "description": ""
+            }
+        },
+        "imageVersion": {
+            "type": "string",
+            "defaultValue": "latest",
+            "allowedValues": [
+                "latest",
+                "1.08.21",
+                "1.07.21"
+            ],
+            "metadata": {
+                "description": "The should be the version you wish to use. To use the latest version use the default value or specify the version you want to use e.g. 1.0.0 or 1.20.4"
+            }
+        },
+        "enableHotpatching": {
+            "type": "bool",
+            "defaultValue": false,
+            "allowedValues": [
+                true,
+                false
+            ],
+            "metadata": {
+                "description": ""
+            }
+        },
+        "patchMode": {
+            "type": "string",
+            "defaultValue": "AutomaticByOS",
+            "allowedValues": [
+                "AutomaticByOS",
+                "ImageDefault"
+            ],
+            "metadata": {
+                "description": ""
+            }
+        },
+        "securityType": {
+            "type": "string",
+            "defaultValue": "Standard",
+            "allowedValues": [
+                "Standard",
+                "TrustedLaunch"
+            ],
+            "metadata": {
+                "description": "TrustedLaunch"
+            }
+        },
+        "SecureBoot": {
+            "type": "bool",
+            "defaultValue": true,
+            "metadata": {
+                "description": ""
+            }
+        },
+        "vTPM": {
+            "type": "bool",
+            "defaultValue": true,
+            "metadata": {
+                "description": ""
+            }
+        },
+        "licenseType": {
+            "type": "string",
+            "defaultValue": "AzureLicense",
+            "allowedValues": [
+                "AzureLicense",
+                "AzureHybrid"
+            ],
+            "metadata": {
+                "descriptions": "Select Azure Hybrid to use an existing Windows Server license as part of the Azure Hybrid benefit"
+            }
+        },
+        "vnetNewOrExisting": {
+            "type": "string",
+            "defaultValue": "new",
+            "allowedValues": [
+                "new",
+                "existing"
+            ],
+            "metadata": {
+                "description": ""
+            }
+        },
+        "existingVnet": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": ""
+            }
+        },
+        "authenticationType": {
+            "type": "string",
+            "defaultValue": "Password",
+            "allowedValues": [
+                "Password",
+                "sshPublicKey"
+            ],
+            "metadata": {
+                "descriptopn": "The type of authentication used on the virtual machine. SSH is recommended for Linux VMs"
+            }
+        },       
+        "sshPublicKeyString": {
+            "type": "securestring",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Admin password for the Virtual Machine. If Linux SSH is recommended."
+            }
+        },
+        "adminUsername": {
+            "type": "string",
+            "metadata": {
+                "description": ""
+            }
+        },
+        "adminPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Admin password for the Virtual Machine. If Linux SSH is recommended."
+            }
+        }, 
+        "localUsername": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "None admin username"
+            }
+        },
+        "localUserPassword": {
+            "type": "securestring",
+            "defaultValue": "",
+            "metadata": {
+                "description": "None username password"
+            }
+        },
+        "subnetName": {
+            "type": "string",
+            "defaultValue": "default",
+            "metadata": {
+                "description": ""
+            }
+        }
+    },
+    "variables": {
+        "vmNamePrefix": "[toUpper(concat(parameters('vmName'), parameters('trainerInitials')))]",
+        "osImage": "[if(contains(parameters('operatingSystem'), 'WindowsServer'), 'WindowsServer', parameters('operatingSystem'))]",
+        "deployWindowsVM": "[if(equals(parameters('imageCreation'), 'No'), 'Windows', json('null'))]",       
+        "_artifactsLocation": "https://raw.githubusercontent.com/balticapprenticeships/azuretemplatesv3",
+        "_templateRepo": "/main/templates"
+    },
+    "resources": [        
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-10-01",
+            "name": "DeployNetworkInterface",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('_artifactsLocation'), variables('_templateRepo'), '/networkInterface.json')]",
+                    "contentVersion": "3.0.0.0"
+                },
+                "parameters": {
+                    "vmName": {
+                        "value": "[parameters('vmName')]"
+                    },
+                    "vmCount": {
+                        "value": "[parameters('vmCount')]"
+                    },
+                    "trainerInitials": {
+                        "value": "[parameters('trainerInitials')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "createdBy": {
+                        "value": "[parameters('createdBy')]"
+                    },
+                    "operatingSystem": {
+                        "value": "[parameters('operatingSystem')]"
+                    },
+                    "courseDate": {
+                        "value": "[parameters('courseDate')]"
+                    },
+                    "resourceGroupCleanup": {
+                        "value": "[parameters('resourceGroupCleanup')]"
+                    },
+                    "subnetName": {
+                        "value": "[parameters('subnetName')]"
+                    },
+                    "vnetNewOrExisting": {
+                        "value": "[parameters('vnetNewOrExisting')]"
+                    },
+                    "existingVnet": {
+                        "value": "[parameters('existingVnet')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'DeployNetworkSecurityGroup')]",
+                "[resourceId('Microsoft.Resources/deployments', 'DeployVirtualNetwork')]",
+                "[resourceId('Microsoft.Resources/deployments', 'DeployPublicIPAddress')]"
+            ]
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-10-01",
+            "name": "DeployNetworkSecurityGroup",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('_artifactsLocation'), variables('_templateRepo'), '/networkSecurityGroup.json')]",
+                    "contentVersion": "3.0.0.0"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "createdBy": {
+                        "value": "[parameters('createdBy')]"
+                    },
+                    "courseDate": {
+                        "value": "[parameters('courseDate')]"
+                    },
+                    "resourceGroupCleanup": {
+                        "value": "[parameters('resourceGroupCleanup')]"
+                    },
+                    "osPlatform": {
+                        "value": "[parameters('osPlatform')]"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "condition": "[equals(parameters('vnetNewOrExisting'), 'new')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-10-01",
+            "name": "DeployVirtualNetwork",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('_artifactsLocation'), variables('_templateRepo'), '/virtualNetwork.json')]",
+                    "contentVersion": "3.0.0.0"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "createdBy": {
+                        "value": "[parameters('createdBy')]"
+                    },
+                    "courseDate": {
+                        "value": "[parameters('courseDate')]"
+                    },
+                    "resourceGroupCleanup": {
+                        "value": "[parameters('resourceGroupCleanup')]"
+                    },
+                    "subnetName": {
+                        "value": "[parameters('subnetName')]"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-10-01",
+            "name": "DeployPublicIPAddress",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('_artifactsLocation'), variables('_templateRepo'), '/publicIp.json')]",
+                    "contentVersion": "3.0.0.0"
+                },
+                "parameters": {
+                    "vmName": {
+                        "value": "[parameters('vmName')]"
+                    },
+                    "vmCount": {
+                        "value": "[parameters('vmCount')]"
+                    },
+                    "trainerInitials": {
+                        "value": "[parameters('trainerInitials')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "createdBy": {
+                        "value": "[parameters('createdBy')]"
+                    },
+                    "courseDate": {
+                        "value": "[parameters('courseDate')]"
+                    },
+                    "resourceGroupCleanup": {
+                        "value": "[parameters('resourceGroupCleanup')]"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "condition": "[equals(parameters('imageCreation'), 'Yes')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-10-01",
+            "name": "DeployImageCreation",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('_artifactsLocation'), variables('_templateRepo'), '/ImageCreation.json')]",
+                    "contentVersion": "3.0.0.0"
+                },
+                "parameters": {
+                    "vmName": {
+                        "value": "[parameters('vmName')]"
+                    },
+                    "vmCount": {
+                        "value": "[parameters('vmCount')]"
+                    },
+                    "trainerInitials": {
+                        "value": "[parameters('trainerInitials')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "createdBy": {
+                        "value": "[parameters('createdBy')]"
+                    },
+                    "idleVm": {
+                        "value": "[parameters('idleVm')]"
+                    },
+                    "resourceGroupCleanup": {
+                        "value": "[parameters('resourceGroupCleanup')]"
+                    },
+                    "schedule": {
+                        "value": "[parameters('schedule')]"
+                    },
+                    "vmSize": {
+                        "value": "[parameters('vmSize')]"
+                    },
+                    "osDiskType": {
+                        "value": "[parameters('osDiskType')]"
+                    },
+                    "imageBaseOS": {
+                        "value": "[parameters('imageBaseOS')]"
+                    },
+                    "licenseType": {
+                        "value": "[parameters('licenseType')]"
+                    },
+                    "imageVersion": {
+                        "value": "[parameters('imageVersion')]"
+                    },
+                    "enableHotpatching": {
+                        "value": "[parameters('enableHotpatching')]"
+                    },
+                    "patchMode": {
+                        "value": "[parameters('patchMode')]"
+                    },
+                    "securityType": {
+                        "value": "[parameters('securityType')]"
+                    },
+                    "secureBoot": {
+                        "value": "[parameters('SecureBoot')]"
+                    },
+                    "vTPM": {
+                        "value": "[parameters('vTPM')]"
+                    },
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('adminPassword')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'DeployNetworkInterface')]"
+            ]  
+        },
+        {
+            "condition": "[equals(variables('deployWindowsVM'), 'Windows')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-10-01",
+            "name": "DeployWindowsVM",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('_artifactsLocation'), variables('_templateRepo'), '/', variables('osImage'), '.json')]",
+                    "contentVersion": "3.0.0.0"
+                },
+                "parameters": {
+                    "vmName": {
+                        "value": "[parameters('vmName')]"
+                    },
+                    "vmCount": {
+                        "value": "[parameters('vmCount')]"
+                    },
+                    "trainerInitials": {
+                        "value": "[parameters('trainerInitials')]"
+                    },
+                    "courseDate": {
+                        "value": "[parameters('courseDate')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "createdBy": {
+                        "value": "[parameters('createdBy')]"
+                    },
+                    "idleVm": {
+                        "value": "[parameters('idleVm')]"
+                    },
+                    "resourceGroupCleanup": {
+                        "value": "[parameters('resourceGroupCleanup')]"
+                    },
+                    "schedule": {
+                        "value": "[parameters('schedule')]"
+                    },
+                    "vmSize": {
+                        "value": "[parameters('vmSize')]"
+                    },
+                    "osDiskType": {
+                        "value": "[parameters('osDiskType')]"
+                    },
+                    "operatingSystem": {
+                        "value": "[variables('osImage')]"
+                    },
+                    "labConfig": {
+                        "value": "[parameters('operatingSystem')]"
+                    },
+                    "licenseType": {
+                        "value": "[parameters('licenseType')]"
+                    },
+                    "imageVersion": {
+                        "value": "[parameters('imageVersion')]"
+                    },
+                    "enableHotpatching": {
+                        "value": "[parameters('enableHotpatching')]"
+                    },
+                    "patchMode": {
+                        "value": "[parameters('patchMode')]"
+                    },
+                    "securityType": {
+                        "value": "[parameters('securityType')]"
+                    },
+                    "secureBoot": {
+                        "value": "[parameters('SecureBoot')]"
+                    },
+                    "vTPM": {
+                        "value": "[parameters('vTPM')]"
+                    },
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('adminPassword')]"
+                    },
+                    "localUsername": {
+                        "value": "[parameters('localUsername')]"
+                    },
+                    "localUserPassword": {
+                        "value": "[parameters('localUserPassword')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'DeployNetworkInterface')]"
+            ]
+        },        
+        {
+            "condition": "[equals(parameters('osPlatform'), 'Linux')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-10-01",
+            "name": "DeployLinuxVM",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('_artifactsLocation'), variables('_templateRepo'), '/LinuxServer.json')]",
+                    "contentVersion": "3.0.0.0"
+                },
+                "parameters": {
+                    "vmName": {
+                        "value": "[parameters('vmName')]"
+                    },
+                    "vmCount": {
+                        "value": "[parameters('vmCount')]"
+                    },
+                    "trainerInitials": {
+                        "value": "[parameters('trainerInitials')]"
+                    },
+                    "courseDate": {
+                        "value": "[parameters('courseDate')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "createdBy": {
+                        "value": "[parameters('createdBy')]"
+                    },
+                    "idleVm": {
+                        "value": "[parameters('idleVm')]"
+                    },
+                    "resourceGroupCleanup": {
+                        "value": "[parameters('resourceGroupCleanup')]"
+                    },
+                    "schedule": {
+                        "value": "[parameters('schedule')]"
+                    },
+                    "vmSize": {
+                        "value": "[parameters('vmSize')]"
+                    },
+                    "osDiskType": {
+                        "value": "[parameters('osDiskType')]"
+                    },
+                    "linuxOS": {
+                        "value": "[parameters('linuxOS')]"
+                    },
+                    "securityType": {
+                        "value": "[parameters('securityType')]"
+                    },
+                    "secureBoot": {
+                        "value": "[parameters('SecureBoot')]"
+                    },
+                    "vTPM": {
+                        "value": "[parameters('vTPM')]"
+                    },
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('adminPassword')]"
+                    },
+                    "authenticationType": {
+                        "value": "[parameters('authenticationType')]"
+                    },
+                    "sshPublicKeyString": {
+                        "value": "[parameters('sshPublicKeyString')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'DeployNetworkInterface')]"
+            ]
+        },
+        {
+            "condition": "[equals(parameters('imageCreation'), 'No')]",
+            "type": "Microsoft.DevTestLab/schedules",
+            "apiVersion": "2018-09-15",
+            "name": "[concat('shutdown-computevm-', concat(variables('vmNamePrefix'), copyIndex('shutdownLoop', 1)))]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "Displayname": "Shutdown Schedule",
+                "Dept": "[resourceGroup().tags['Dept']]",
+                "Created By": "[parameters('createdBy')]",
+                "Course Date": "[concat('WC-', parameters('courseDate'))]",
+                "Cleanup": "[parameters('resourceGroupCleanup')]"
+            },
+            "copy": {
+                "name": "shutdownLoop",
+                "count": "[parameters('vmCount')]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', if(equals(parameters('osPlatform'), 'Windows'), 'DeployWindowsVM', 'DeployLinuxVM'))]"
+            ],
+            "properties": {
+                "status": "Enabled",
+                "taskType": "ComputeVmShutdownTask",
+                "dailyRecurrence": {
+                    "time": "17:00"
+                },
+                "timeZoneId": "GMT Standard Time",
+                "targetResourceId": "[resourceId('Microsoft.Compute/virtualMachines', concat(variables('vmNamePrefix'), copyIndex('shutdownLoop', 1)))]",
+                "notificationSettings": {
+                    "status": "Disabled",
+                    "notificationLocale": "en",
+                    "timeInMinutes": 30
+                }
+            }
+        }
+    ],
+    "outputs": {
+        "contentVersion": {
+            "type": "string",
+            "value": "[deployment().properties.template.contentVersion]"
+        },
+        "location": {
+            "type": "string",
+            "value": "[parameters('location')]"
+        },
+        "vmNamePrefix": {
+            "type": "string",
+            "value": "[parameters('vmName')]"
+        },
+        "createdBy": {
+            "type": "string",
+            "value": "[parameters('createdBy')]"
+        },
+        "trainer": {
+            "type": "string",
+            "value": "[parameters('trainerInitials')]"
+        },
+        "scheduleOn": {
+            "type": "string",
+            "value": "[parameters('schedule')]"
+        },
+        "idleVm": {
+            "type": "string",
+            "value": "[parameters('idleVm')]"
+        },
+        "resourceGroupCleanup": {
+            "type": "string",
+            "value": "[parameters('resourceGroupCleanup')]"
+        },
+        "osDiskType": {
+            "type": "string",
+            "value": "[parameters('osDisktype')]"
+        },
+        "vmSize": {
+            "type": "string",
+            "value": "[parameters('vmSize')]"
+        },
+        "osPlatform": {
+            "type": "string",
+            "value": "[parameters('osPlatform')]"
+        },
+        "imageCreation": {
+            "type": "string",
+            "value": "[parameters('imageCreation')]"
+        },
+        "imageBaseOS": {
+            "type": "string",
+            "value": "[parameters('imageBaseOS')]"
+        },
+        "operatingSystem": {
+            "type": "string",
+            "value": "[if(equals(parameters('osPlatform'), 'Windows'), parameters('operatingSystem'), parameters('linuxOS'))]"
+        },
+        "imageVersion": {
+            "type": "string",
+            "value": "[if(equals(parameters('osPlatform'), 'Windows'), parameters('imageVersion'), reference('DeployLinuxVM').outputs.linuxOS.value.version)]"
+        },
+        "virtualMachineFQDN": {
+            "type": "array",
+            "value": "[reference('DeployPublicIPAddress').outputs.fqdn.value]"
+        },
+        "localUsername": {
+            "type": "string",
+            "value": "[parameters('localUsername')]"
+        }
+    }
+}

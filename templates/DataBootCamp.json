@@ -1,0 +1,218 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "3.0.0.0",
+    "parameters": {
+        "vmName": {
+            "type": "string"
+        },
+        "vmCount": {
+            "type": "int"
+        },
+        "trainerInitials": {
+            "type": "string"
+        },
+        "location": {
+            "type": "string"
+        },
+        "createdBy": {
+            "type": "string"
+        },
+        "courseDate": {
+            "type": "string"
+        },
+        "idleVm": {
+            "type": "string"
+        },
+        "resourceGroupCleanup": {
+            "type": "string"
+        },
+        "schedule": {
+            "type": "string"
+        },
+        "vmSize": {
+            "type": "string"
+        },
+        "osDiskType": {
+            "type": "string"
+        },
+        "operatingSystem": {
+            "type": "string"
+        },
+        "labConfig": {
+            "type": "string"
+        },        
+        "licenseType": {
+            "type": "string"
+        },
+        "imageVersion": {
+            "type": "string"
+        },
+        "enableHotpatching": {
+            "type": "bool"
+        },
+        "patchMode": {
+            "type": "string"
+        },
+        "securityType": {
+            "type": "string"
+        },
+        "secureBoot": {
+            "type": "bool"
+        },
+        "vTPM": {
+            "type": "bool"
+        },
+        "adminUsername": {
+            "type": "string"
+        },
+        "adminPassword": {
+            "type": "securestring"
+        },
+        "localUsername": {
+            "type": "string"
+        },
+        "localUserPassword": {
+            "type": "securestring"
+        }
+    },
+    "variables": {
+        "vmNamePrefix": "[toUpper(concat(parameters('vmName'), parameters('trainerInitials')))]",
+        "galleryImageName": "SharedImageGallery",
+        "windowsLicense": "Windows_Client",
+        "operatingSystemValues": {
+            "DataBootCamp": {
+                "galleryImageDefinitionName": "BA-DATABOOT"
+            }
+        },
+        "trustedLaunch": {
+            "securityType": "[parameters('securityType')]",
+            "uefiSettings": {
+                "secureBootEnabled": "[parameters('secureBoot')]",
+                "vTpmEnabled": "[parameters('vTPM')]"
+            }
+        },
+        "_artifactsLocation": "https://raw.githubusercontent.com/balticapprenticeships/azuretemplatesv3",
+        "_extensionRepo": "main/extensions",
+        "dscArchiveFolder": "DSC",
+        "dscArchiveFileName": "xBaLabWindowsCfg.zip"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2020-12-01",
+            "name": "[concat(variables('vmNamePrefix'), copyIndex('virtualMachineLoop', 1))]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "Displayname": "Virtual Machine",
+                "Dept": "[resourceGroup().tags['Dept']]",
+                "Created By": "[parameters('createdBy')]",
+                "Course Date": "[concat('WC-', parameters('courseDate'))]",
+                "Schedule": "[if(equals(parameters('schedule'), 'Yes'), 'StartDaily', 'NoSchedule')]",
+                "IdleShutdown": "[parameters('idleVm')]",
+                "Cleanup": "[parameters('resourceGroupCleanup')]"
+            },
+            "copy": {
+                "name": "virtualMachineLoop",
+                "count": "[parameters('vmCount')]"
+            },
+            "dependsOn": [
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('vmSize')]"
+                },
+                "storageProfile": {
+                    "osDisk": {
+                        "name": "[concat(variables('vmNamePrefix'), copyIndex('virtualMachineLoop', 1), '-osdisk')]",
+                        "createOption": "FromImage",
+                        "managedDisk": {
+                            "storageAccountType": "[parameters('osDiskType')]"
+                        }
+                    },
+                    "imageReference": {
+                        "id": "[resourceId('Microsoft.Compute/galleries/images/versions', variables('galleryImageName'), variables('operatingSystemValues')[parameters('operatingSystem')].galleryImageDefinitionName, parameters('imageVersion'))]"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('vmNamePrefix'), copyIndex('virtualMachineLoop', 1), '-nic'))]"
+                        }
+                    ]
+                },
+                "osProfile": {
+                    "computerName": "[concat(variables('vmNamePrefix'), copyIndex('virtualMachineLoop', 1))]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]",
+                    "windowsConfiguration": {
+                        "enableAutomaticUpdates": true,
+                        "provisionVMAgent": true,
+                        "timeZone": "GMT Standard Time",
+                        "patchSettings": {
+                            "enableHotpatching": "[parameters('enableHotpatching')]",
+                            "patchMode": "[parameters('patchMode')]"
+                        }
+                    }
+                },
+                "securityProfile": "[if(equals(parameters('securityType'), 'TrustedLaunch'), variables('trustedLaunch'), json('null'))]",
+                "licenseType": "[if(equals(parameters('licenseType'), 'AzureHybrid'), variables('windowsLicense'), json('null'))]",
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": false
+                    }
+                }
+            },
+            "resources": [
+                {
+                    "type": "extensions",
+                    "apiVersion": "2018-06-01",
+                    "name": "Microsoft.Powershell.DSC",
+                    "location": "[parameters('location')]",
+                    "tags": {
+                        "Displayname": "DSC",
+                        "Dept": "[resourceGroup().tags['Dept']]",
+                        "Created By": "[parameters('createdBy')]",
+                        "Course Date": "[concat('WC-', parameters('courseDate'))]",
+                        "Cleanup": "[parameters('resourceGroupCleanup')]"
+                    },
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Compute/virtualMachines', concat(variables('vmNamePrefix'), copyIndex('virtualMachineLoop', 1)))]"
+                    ],
+                    "properties": {
+                        "publisher": "Microsoft.Powershell",
+                        "type": "DSC",
+                        "typeHandlerVersion": "2.77",
+                        "autoUpgradeMinorVersion": true,
+                        "settings": {
+                            "wmfVersion": "latest",
+                            "configuration": {
+                                "url": "[concat(variables('_artifactsLocation'), '/', variables('_extensionRepo'), '/', variables('dscArchiveFolder'), '/', variables('dscArchiveFileName'))]",
+                                "script": "xBaLabWindowsCfg.ps1",
+                                "function": "xBaLabWinClientCfg"
+                            }
+                        },
+                        "protectedSettings": {
+                            "configurationArguments": {
+                                "Credential": {
+                                    "UserName": "[parameters('localUsername')]",
+                                    "Password": "[parameters('localUserPassword')]"
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    ],
+    "outputs": {
+        "vmId": {
+            "type": "array",
+            "copy": {
+                "count": "[parameters('vmCount')]",
+                "input": {
+                    "value": "[resourceId('Microsoft.Compute/virtualMachines', concat(variables('vmNamePrefix'), copyIndex(1)))]"
+                }
+            }            
+        }
+    }
+}
