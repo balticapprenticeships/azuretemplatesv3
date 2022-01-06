@@ -81,7 +81,7 @@
         "windowsLicense": "Windows_Client",
         "operatingSystemValues": {
             "DiplomaVm": {
-                "galleryImageDefinitionName": "BA-Win10"
+                "galleryImageDefinitionName": "BA-Win10-Courses"
             }
         },
         "trustedLaunch": {
