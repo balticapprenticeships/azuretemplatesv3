@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [templates]
   Add Trusted Launch support for Gen2 managed Windows images.
 
+## [] - 06/01/2022
+
+### Changed
+- [DiplomaVM]
+  changed gallery image gallery definition
+  
 ## [3.0.0.0] - 15/12/2021
 
 ### Changed
