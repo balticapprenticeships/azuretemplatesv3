@@ -94,7 +94,7 @@ Configuration xBaLabMTAServerMdCfg {
         xScript "RunvCreateMTAMD-DCVm"
         {
             SetScript = { 
-                New-VM -Name "MD-Windows Server 2016" -MemoryStartupBytes 2GB -Generation 2 -BootDevice VHD -VHDPath "C:\Users\Public\Documents\Hyper-V\Virtual hard disks\MobilityandDevices\MTAMD-DC.vhdx" -SwitchName "Private-vSwitch"
+                New-VM -Name "MD-DC (Domain Controller)" -MemoryStartupBytes 2GB -Generation 2 -BootDevice VHD -VHDPath "C:\Users\Public\Documents\Hyper-V\Virtual hard disks\MobilityandDevices\MTAMD-DC.vhdx" -SwitchName "Private-vSwitch"
             }
             TestScript = { $false }
             GetScript = { 
