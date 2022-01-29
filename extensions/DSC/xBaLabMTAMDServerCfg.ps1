@@ -1,7 +1,7 @@
 ################################################################
 # Script to configure Windows lab environment using DSC        #
 # Author: Chris Langford                                       #
-# Version: 1.0.0                                               #
+# Version: 1.0.1                                               #
 ################################################################
 
 Configuration xBaLabMTAServerMdCfg {
