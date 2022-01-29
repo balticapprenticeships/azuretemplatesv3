@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [templates]
   Add Trusted Launch support for Gen2 managed Windows images.
 
+## [] - 29/01/2022
+
+### Changed
+- [WindowsServer]
+  changes SP DSC config
+
 ## [] - 25/01/2022
 
 ### Changed

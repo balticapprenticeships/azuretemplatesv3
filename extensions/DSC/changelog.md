@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [unreleased]
  
 ### Add
+
+## [1.0.0] - 29/01/2022
+
+### Added
+- [xBaLabSecPlusServerCfg]
+  added SecurityPlus DSC configuration and package
+
+### Changed
+- [xBaLabMTAServerMdCfg] [1.0.1]
+  changed RunvCreateMTAMD-DCVm script VM name
   
 ## [1.5.0] - 07.12.2021
 
