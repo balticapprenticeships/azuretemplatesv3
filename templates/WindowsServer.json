@@ -106,9 +106,9 @@
                 "dscFunction": "xBaLabWinServerCfg"
             },
             "WindowsServer-SP": {
-                "dscArchive": "xBaLabWindowsCfg.zip",
-                "dscScript": "xBaLabWindowsCfg.ps1",
-                "dscFunction": "xBaLabWinServerCfg"
+                "dscArchive": "xBaLabSecPlusServerCfg.zip",
+                "dscScript": "xBaLabSecPlusServerCfg.ps1",
+                "dscFunction": "xBaLabSecPlusServerCfg"
             }
 
         },
