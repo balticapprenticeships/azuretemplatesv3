@@ -10,10 +10,6 @@ $username = "Apprentice"
 
 Configuration MtaMDEnvServer {
     
-    # Install required modules
-    Install-Module -Name xPSDesiredStateConfiguration -Force
-    #Install-Module -Name PSDesiredStateConfiguration -Force # only for PowerShell 7.2
-
     # Set values for feature install
     $features = @("Hyper-V", "RSAT-Hyper-V-Tools", "Hyper-V-Tools", "Hyper-V-PowerShell")
 
