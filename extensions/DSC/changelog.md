@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
  
 ### Add
 
+## [1.0.0]
+ 
+### Add
+- [AlsMobDevSvrSetupDsc] 03.02.22
+  added new dsc files for Azure Lab Services
+
 ## [1.0.0] - 29/01/2022
 
 ### Added
