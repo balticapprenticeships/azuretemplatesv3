@@ -14,8 +14,8 @@ Configuration MtaMDEnvServer {
     $features = @("Hyper-V", "RSAT-Hyper-V-Tools", "Hyper-V-Tools", "Hyper-V-PowerShell")
 
     # Import the DSC Module
-    Import-DscResource -ModuleName PsDesiredStateConfiguration
-    Import-DscResource -ModuleName xPSDesiredStateConfiguration
+    Import-DscResource -ModuleName PsDesiredStateConfiguration -ModuleVersion 2.0.5
+    Import-DscResource -ModuleName xPSDesiredStateConfiguration -ModuleVersion 9.1.0
 
     Node 'localhost' {
 
