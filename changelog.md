@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [templates]
   Add Trusted Launch support for Gen2 managed Windows images.
 
+## [] - 12/03/2022
+
+### Added
+- [templates]
+  Added Guest Configuration extension
+
 ## [] - 29/01/2022
 
 ### Changed
