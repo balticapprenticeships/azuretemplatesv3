@@ -79,10 +79,10 @@ Configuration xBaLabSecPlusServerCfg {
         xScript "RunCreateSecPlus-DCVm"
         {
             SetScript = { 
-                New-VM -Name "VSERVER" -MemoryStartupBytes 2GB -Generation 2 -BootDevice VHD -VHDPath "C:\Users\Public\Documents\Hyper-V\Virtual hard disks\SecurityPlus\SECP-SERVER.vhdx" -SwitchName "Private-vSwitch"
+                New-VM -Name "VSERVER" -MemoryStartupBytes 2GB -Generation 2 -BootDevice VHD -VHDPath "C:\Users\Public\Documents\Hyper-V\Virtual hard disks\SecurityPlus\VSERVER.vhdx" -SwitchName "Private-vSwitch"
             }
             TestScript = { $false }
-            GetScript = { 
+            GetScript = {  
                 # Do Nothing
             }
             DependsOn = "[xWindowsFeatureSet]AddHyperVFeatures"
@@ -91,7 +91,7 @@ Configuration xBaLabSecPlusServerCfg {
         xScript "RunCreateSecPlus-Win10Vm"
         {
             SetScript = { 
-                New-VM -Name "Client01" -MemoryStartupBytes 1GB -Generation 1 -BootDevice VHD -VHDPath "C:\Users\Public\Documents\Hyper-V\Virtual hard disks\SecurityPlus\SECP-CLIENT.vhdx" -SwitchName "Private-vSwitch"
+                New-VM -Name "Client01" -MemoryStartupBytes 1GB -Generation 1 -BootDevice VHD -VHDPath "C:\Users\Public\Documents\Hyper-V\Virtual hard disks\SecurityPlus\Client01.vhdx" -SwitchName "Private-vSwitch"
             }
             TestScript = { $false }
             GetScript = { 
