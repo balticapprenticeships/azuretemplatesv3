@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
  
 ### Add
 
+
+## [xBaLabSecPlusServerCfg] [1.0.1] -21.04.2022
+- ### Changed
+  New-VM vhdpath vhdx file name
+
 ## [1.0.0]
  
 ### Add
