@@ -69,7 +69,7 @@ Configuration xBaLabWinServerCfg {
             SetScript = { 
                 New-VMSwitch -SwitchName "Int-vSwitch" -SwitchType Internal
                 New-NetIPAddress -InterfaceAlias "vEthernet (Int-vSwitch)" -IPAddress 172.16.20.254 -PrefixLength 24
-                New-NetNat -Name NAT-VM -InternalIPInterfaceAddressPrefix 172.16.20.0/24
+                New-NetNat -Name "NAT-VM" -InternalIPInterfaceAddressPrefix 172.16.20.0/24
             }
             TestScript = { $false }
             GetScript = { 
