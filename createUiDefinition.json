@@ -304,12 +304,12 @@
                                     "value": "latest"
                                 },
                                 {
-                                    "label": "January",
-                                    "value": "1.01.22"
+                                    "label": "April",
+                                    "value": "1.04.22"
                                 },
                                 {
-                                    "label": "December",
-                                    "value": "1.12.21"
+                                    "label": "March",
+                                    "value": "1.03.22"
                                 }
                             ],
                             "required": true
