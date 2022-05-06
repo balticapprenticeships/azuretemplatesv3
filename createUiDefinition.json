@@ -248,10 +248,6 @@
                                 {
                                     "label": "MTA/C&G Exams",
                                     "value": "WindowsTesting"
-                                },                                
-                                {
-                                    "label": "Raw Digital",
-                                    "value": "RawDigital"
                                 },
                                 {
                                     "label": "Data Boot Camp",
