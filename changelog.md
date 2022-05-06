@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [templates]
   Add Trusted Launch support for Gen2 managed Windows images.
 
+## [] - 06/05/2022
+
+### Changed
+- [createUiDefinition,main]
+  removed Raw Digital course
+
 ## [] - 04/05/2022
 
 ### Changed
