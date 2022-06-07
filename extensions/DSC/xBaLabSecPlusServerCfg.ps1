@@ -67,7 +67,7 @@ Configuration xBaLabSecPlusServerCfg {
         xScript "RunvSwitchForNestedVms"
         {
             SetScript = { 
-                New-VMSwitch -SwitchName "Private-vSwitch" -SwitchType Private
+                New-VMSwitch -SwitchName "Int-vSwitch" -SwitchType Internal
             }
             TestScript = { $false }
             GetScript = { 
@@ -79,7 +79,7 @@ Configuration xBaLabSecPlusServerCfg {
         xScript "RunCreateSecPlus-DCVm"
         {
             SetScript = { 
-                New-VM -Name "VSERVER" -MemoryStartupBytes 2GB -Generation 2 -BootDevice VHD -VHDPath "C:\Users\Public\Documents\Hyper-V\Virtual hard disks\SecurityPlus\VSERVER.vhdx" -SwitchName "Private-vSwitch"
+                New-VM -Name "VSERVER" -MemoryStartupBytes 2GB -Generation 2 -BootDevice VHD -VHDPath "C:\Users\Public\Documents\Hyper-V\Virtual hard disks\SecurityPlus\VSERVER.vhdx" -SwitchName "Int-vSwitch"
             }
             TestScript = { $false }
             GetScript = {  
@@ -91,7 +91,7 @@ Configuration xBaLabSecPlusServerCfg {
         xScript "RunCreateSecPlus-Win10Vm"
         {
             SetScript = { 
-                New-VM -Name "Client01" -MemoryStartupBytes 1GB -Generation 1 -BootDevice VHD -VHDPath "C:\Users\Public\Documents\Hyper-V\Virtual hard disks\SecurityPlus\Client01.vhdx" -SwitchName "Private-vSwitch"
+                New-VM -Name "Client01" -MemoryStartupBytes 1GB -Generation 1 -BootDevice VHD -VHDPath "C:\Users\Public\Documents\Hyper-V\Virtual hard disks\SecurityPlus\Client01.vhdx" -SwitchName "Int-vSwitch"
             }
             TestScript = { $false }
             GetScript = { 
