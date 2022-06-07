@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
  
 ### Add
 
+## [xBaLabSecPlusServerCfg] [1.1.0] -06.06.2022
+- ### Changed
+  virtual switch type to internal and set the name to Int-vSwitch
 
 ## [xBaLabSecPlusServerCfg] [1.0.1] -21.04.2022
 - ### Changed
